@@ -67,7 +67,7 @@ class HomeActivity : ComponentActivity() {
 @Composable
 fun HomeScreen() {
     Column {
-        // Display the header
+
         HeaderSection()
 
     }
