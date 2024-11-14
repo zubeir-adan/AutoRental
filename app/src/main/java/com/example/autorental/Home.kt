@@ -25,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -34,9 +35,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.view.WindowInsetsControllerCompat
 import coil.compose.rememberAsyncImagePainter
-import com.example.autorental.CarSection
+import com.example.autorental.logo.BrandCarsActivity
 import com.example.autorental.reusable.HeaderSection
 import com.example.autorental.ui.theme.AutoRentalTheme
+import com.example.autorental.utils.navigateToCategoryDetails // Keep this as it's still in use
 
 class HomeActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,16 +51,7 @@ class HomeActivity : ComponentActivity() {
 
         setContent {
             AutoRentalTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Column(modifier = Modifier.padding(innerPadding)) {
-                        HeaderSection()
-                        SearchBar()
-                        TopBrandsLabel()
-                        CarLogosRow()
-                        CarRecommendationsLabel()
-                        CarRecommendationsFromSection()
-                    }
-                }
+                HomeScreen()
             }
         }
     }
@@ -66,29 +59,40 @@ class HomeActivity : ComponentActivity() {
 
 @Composable
 fun HomeScreen() {
-    Column {
-
-        HeaderSection()
-
+    Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+        Column(modifier = Modifier.padding(innerPadding)) {
+            HeaderSection()
+            SearchBar()
+            TopBrandsLabel()
+            CarLogosRow()
+            Text(
+                text = "Car Categories",
+                modifier = Modifier.padding(start = 16.dp, top = 8.dp),
+                color = Color.Black,
+                style = TextStyle(fontSize = 18.sp)
+            )
+            CarCategoryList() // This is where we show the car categories
+            CarRecommendationsLabel()
+            CarRecommendationsFromSection()
+        }
     }
 }
-
 
 @Composable
 fun CarLogosRow() {
     val logos = listOf(
-        "https://imaginative-nell-strathmore-34d67bf2.koyeb.app/mobile/logo/nissan.jpg",
-        "https://imaginative-nell-strathmore-34d67bf2.koyeb.app/mobile/logo/bmw.jpg",
-        "https://imaginative-nell-strathmore-34d67bf2.koyeb.app/mobile/logo/toyota.jpg",
-        "https://imaginative-nell-strathmore-34d67bf2.koyeb.app/mobile/logo/audi.jpg",
-        "https://imaginative-nell-strathmore-34d67bf2.koyeb.app/mobile/logo/ford.jpg",
-        "https://imaginative-nell-strathmore-34d67bf2.koyeb.app/mobile/logo/chevy.jpg",
-        "https://imaginative-nell-strathmore-34d67bf2.koyeb.app/mobile/logo/benz.jpg",
-        "https://imaginative-nell-strathmore-34d67bf2.koyeb.app/mobile/logo/honda.jpg",
-        "https://imaginative-nell-strathmore-34d67bf2.koyeb.app/mobile/logo/hyundai.png",
-        "https://imaginative-nell-strathmore-34d67bf2.koyeb.app/mobile/logo/jeep.jpg",
-        "https://imaginative-nell-strathmore-34d67bf2.koyeb.app/mobile/logo/tesla.jpg",
-        "https://imaginative-nell-strathmore-34d67bf2.koyeb.app/mobile/logo/volkswagen.jpg"
+        "nissan" to "https://imaginative-nell-strathmore-34d67bf2.koyeb.app/mobile/logo/nissan.jpg",
+        "bmw" to "https://imaginative-nell-strathmore-34d67bf2.koyeb.app/mobile/logo/bmw.jpg",
+        "toyota" to "https://imaginative-nell-strathmore-34d67bf2.koyeb.app/mobile/logo/toyota.jpg",
+        "audi" to "https://imaginative-nell-strathmore-34d67bf2.koyeb.app/mobile/logo/audi.jpg",
+        "ford" to "https://imaginative-nell-strathmore-34d67bf2.koyeb.app/mobile/logo/ford.jpg",
+        "chevy" to "https://imaginative-nell-strathmore-34d67bf2.koyeb.app/mobile/logo/chevy.jpg",
+        "benz" to "https://imaginative-nell-strathmore-34d67bf2.koyeb.app/mobile/logo/benz.jpg",
+        "honda" to "https://imaginative-nell-strathmore-34d67bf2.koyeb.app/mobile/logo/honda.jpg",
+        "hyundai" to "https://imaginative-nell-strathmore-34d67bf2.koyeb.app/mobile/logo/hyundai.png",
+        "jeep" to "https://imaginative-nell-strathmore-34d67bf2.koyeb.app/mobile/logo/jeep.jpg",
+        "tesla" to "https://imaginative-nell-strathmore-34d67bf2.koyeb.app/mobile/logo/tesla.jpg",
+        "volkswagen" to "https://imaginative-nell-strathmore-34d67bf2.koyeb.app/mobile/logo/volkswagen.jpg"
     )
 
     Row(
@@ -96,24 +100,30 @@ fun CarLogosRow() {
             .padding(16.dp)
             .horizontalScroll(rememberScrollState())
     ) {
-        logos.forEach { url ->
-            LogoImage(url)
+        logos.forEach { (brand, url) ->
+            LogoImage(url = url, brand = brand)
         }
     }
 }
 
 @Composable
-fun LogoImage(url: String) {
-    val imageSize = 70.dp
+fun LogoImage(url: String, brand: String) {
+    val context = LocalContext.current
+
     Box(
         modifier = Modifier
             .padding(end = 8.dp)
-            .size(imageSize)
+            .size(70.dp)
             .clip(RoundedCornerShape(16.dp))
+            .clickable {
+                context.startActivity(
+                    BrandCarsActivity.newIntent(context, brand)
+                )
+            }
     ) {
         Image(
             painter = rememberAsyncImagePainter(url),
-            contentDescription = "Car Logo",
+            contentDescription = "$brand Logo",
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop
         )
@@ -173,9 +183,6 @@ fun CarRecommendationsFromSection() {
             .fillMaxWidth()
     ) {
         item {
-            CarCategoryList()
-        }
-        item {
             Spacer(modifier = Modifier.height(16.dp))
         }
         items(cars.chunked(2)) { carPair ->
@@ -230,13 +237,13 @@ fun CarRecommendationsFromSection() {
 @Composable
 fun CarCategoryList() {
     val categories = listOf(
-        "Economy", "Standard", "Full size", "Luxury", "SUV",
+        "Economy", "Standard", "Luxury", "SUV",
         "Vans", "Pickup", "Electric", "Convertible"
     )
 
     LazyRow(
         modifier = Modifier
-            .padding(10.dp)
+            .padding(16.dp)
             .fillMaxWidth()
     ) {
         items(categories) { category ->
@@ -247,6 +254,8 @@ fun CarCategoryList() {
 
 @Composable
 fun CategoryItem(category: String) {
+    val context = LocalContext.current
+
     Text(
         text = category,
         modifier = Modifier
@@ -255,16 +264,16 @@ fun CategoryItem(category: String) {
             .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f))
             .padding(12.dp)
             .clickable {
-                // Handle category selection here
+                context.navigateToCategoryDetails(category) // Use the extension function
             },
         style = TextStyle(fontSize = 14.sp, fontWeight = FontWeight.Medium)
     )
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
-fun PreviewHomeActivity() {
+fun PreviewHomeScreen() {
     AutoRentalTheme {
-        HomeActivity()
+        HomeScreen()
     }
 }

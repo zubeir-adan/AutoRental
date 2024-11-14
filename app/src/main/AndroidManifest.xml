@@ -23,7 +23,15 @@
             </intent-filter>
         </activity>
 
+        <!-- CategoryDetails Activity -->
+        <activity android:name=".CategoryDetails"
+            android:exported="true">
+        </activity>
 
+        <!-- BrandCarsActivity in the 'logo' package -->
+        <activity android:name="com.example.autorental.logo.BrandCarsActivity"
+            android:exported="true">
+        </activity>
 
         <!-- Additional activities can be declared here -->
 
