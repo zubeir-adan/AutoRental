@@ -5,8 +5,6 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.runtime.Composable
-import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -17,19 +15,22 @@ class BrandCarsActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Get brand name from intent extras
-        val brand = intent.getStringExtra(EXTRA_BRAND)
+        // Get the brand name from intent extras
+        val brand = intent.getStringExtra(EXTRA_BRAND) ?: "Unknown"
 
         setContent {
             AutoRentalTheme {
-                // Create a NavController instance
+                // Initialize NavController
                 val navController = rememberNavController()
 
-                // Set up a NavHost
+                // Set up a navigation host
                 NavHost(navController = navController, startDestination = "brandCarsScreen") {
                     composable("brandCarsScreen") {
-                        // Pass brand name and navController to BrandCarsScreen
-                        BrandCarsScreen(brand = brand, navController = navController)
+                        // Pass brand and onBack function to BrandCarsScreen
+                        BrandCarsScreen(
+                            brand = brand,
+                            onBack = { finish() } // Close the activity on back navigation
+                        )
                     }
                 }
             }
@@ -39,6 +40,13 @@ class BrandCarsActivity : ComponentActivity() {
     companion object {
         private const val EXTRA_BRAND = "extra_brand"
 
+        /**
+         * Creates an intent to start this activity with the specified brand.
+         *
+         * @param context The context to use for creating the intent.
+         * @param brand The name of the car brand to display.
+         * @return An Intent for starting BrandCarsActivity.
+         */
         fun newIntent(context: Context, brand: String): Intent {
             return Intent(context, BrandCarsActivity::class.java).apply {
                 putExtra(EXTRA_BRAND, brand)

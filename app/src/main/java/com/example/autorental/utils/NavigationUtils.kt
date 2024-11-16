@@ -1,16 +1,13 @@
+// NavigationUtils.kt
 package com.example.autorental.utils
 
 import android.content.Context
 import android.content.Intent
-import com.example.autorental.CategoryDetails
+import com.example.autorental.CategoryDetailsActivity
 
-// Use Jetpack Compose navigation here if you're using NavController
-
-// Context-based navigation via intent (if still using Activities)
 fun Context.navigateToCategoryDetails(category: String) {
-    val intent = Intent(this, CategoryDetails::class.java).apply {
-        putExtra("category", category)
+    val intent = Intent(this, CategoryDetailsActivity::class.java).apply {
+        putExtra("CATEGORY_NAME", category)  // Pass the category to the activity
     }
     startActivity(intent)
 }
-

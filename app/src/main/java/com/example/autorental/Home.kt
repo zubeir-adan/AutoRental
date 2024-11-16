@@ -2,10 +2,13 @@
 
 package com.example.autorental
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -20,12 +23,18 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -35,10 +44,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.view.WindowInsetsControllerCompat
 import coil.compose.rememberAsyncImagePainter
+import coil.compose.rememberImagePainter
+import com.example.autorental.CarCategoryProvider.getBrandsForCategory
 import com.example.autorental.logo.BrandCarsActivity
 import com.example.autorental.reusable.HeaderSection
+import com.example.autorental.screens.CarDetailsActivity
+import com.example.autorental.screens.CarDetailsScreen
 import com.example.autorental.ui.theme.AutoRentalTheme
 import com.example.autorental.utils.navigateToCategoryDetails // Keep this as it's still in use
+
 
 class HomeActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -59,25 +73,48 @@ class HomeActivity : ComponentActivity() {
 
 @Composable
 fun HomeScreen() {
+    // State to hold the selected car
+
+    var selectedCar: Car? by remember { mutableStateOf(null) }
+
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-        Column(modifier = Modifier.padding(innerPadding)) {
-            HeaderSection()
-            SearchBar()
-            TopBrandsLabel()
-            CarLogosRow()
-            Text(
-                text = "Car Categories",
-                modifier = Modifier.padding(start = 16.dp, top = 8.dp),
-                color = Color.Black,
-                style = TextStyle(fontSize = 18.sp)
+        if (selectedCar == null) {
+            // Show the main home screen when no car is selected
+            Column(modifier = Modifier.padding(innerPadding)) {
+                HeaderSection()
+                SearchBar()
+                TopBrandsLabel()
+                CarLogosRow()
+                Text(
+                    text = "Car Categories",
+                    modifier = Modifier.padding(start = 16.dp, top = 8.dp),
+                    color = Color.Black,
+                    style = TextStyle(fontSize = 18.sp)
+                )
+                CarCategoryList()
+                Spacer(modifier = Modifier.height(16.dp))
+                CarRecommendationsLabel()
+                CarRecommendationsFromSection(onCarClick = { car ->
+                    selectedCar = car // Update the selected car when clicked
+                })
+            }
+        } else {
+            // Show the car details screen when a car is selected
+            CarDetailsScreen(
+                name = selectedCar!!.name,
+                category = selectedCar!!.category,
+                price = selectedCar!!.price,
+                imageUrl = selectedCar!!.imageUrl,
+                brand = selectedCar!!.brand,
+                seats = selectedCar!!.seats,
+                doors = selectedCar!!.doors,
+                gasCapacity = selectedCar!!.gasCapacity,
+                majorDetails = selectedCar!!.majorDetails,
+                onBack = { selectedCar = null } // Go back to the home screen
             )
-            CarCategoryList() // This is where we show the car categories
-            CarRecommendationsLabel()
-            CarRecommendationsFromSection()
         }
     }
 }
-
 @Composable
 fun CarLogosRow() {
     val logos = listOf(
@@ -116,9 +153,8 @@ fun LogoImage(url: String, brand: String) {
             .size(70.dp)
             .clip(RoundedCornerShape(16.dp))
             .clickable {
-                context.startActivity(
-                    BrandCarsActivity.newIntent(context, brand)
-                )
+                // Start BrandCarsActivity when a brand logo is clicked
+                context.startActivity(BrandCarsActivity.newIntent(context, brand))
             }
     ) {
         Image(
@@ -132,26 +168,117 @@ fun LogoImage(url: String, brand: String) {
 
 @Composable
 fun SearchBar() {
-    TextField(
-        value = "",
-        onValueChange = {},
-        placeholder = { Text("Search for a car") },
-        trailingIcon = {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_search),
-                contentDescription = "Search Icon",
-                modifier = Modifier.padding(end = 8.dp)
-            )
-        },
+    var searchText by remember { mutableStateOf("") }
+    val carsList = remember { mutableStateOf<List<Car>>(emptyList()) }
+    val keyboardController = LocalSoftwareKeyboardController.current
+
+    // Update the carsList when the search text changes
+    LaunchedEffect(searchText) {
+        if (searchText.isNotEmpty()) {
+            val allCars = EconomyCars.getCars() +
+                    StandardCars.getCars() +
+                    LuxuryCars.getCars() +
+                    SUVCars.getCars() +
+                    VanCars.getCars() +
+                    PickupCars.getCars() +
+                    ElectricCars.getCars() +
+                    ConvertibleCars.getCars()
+
+            carsList.value = allCars.filter { it.name.contains(searchText, ignoreCase = true) }
+        } else {
+            carsList.value = emptyList()
+        }
+    }
+
+    Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp)
-            .height(56.dp),
-        shape = RoundedCornerShape(12.dp),
-        keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Search),
-        keyboardActions = KeyboardActions.Default
-    )
+    ) {
+        TextField(
+            value = searchText,
+            onValueChange = { searchText = it },
+            placeholder = { Text("Search for a car") },
+            trailingIcon = {
+                if (searchText.isNotEmpty()) {
+                    IconButton(onClick = {
+                        searchText = ""
+                        keyboardController?.hide() // Hide the keyboard when clearing text
+                    }) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_clear),
+                            contentDescription = "Clear search text"
+                        )
+                    }
+                }
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp),
+            shape = RoundedCornerShape(12.dp),
+            keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Search),
+            keyboardActions = KeyboardActions(
+                onSearch = {
+                    keyboardController?.hide() // Hide the keyboard on search action
+                }
+            )
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        if (searchText.isNotEmpty()) {
+            if (carsList.value.isEmpty()) {
+                Text("No cars found for '$searchText'", style = MaterialTheme.typography.titleLarge)
+            } else {
+                LazyColumn {
+                    items(carsList.value) { car ->
+                        CarCardDetail(car)
+                    }
+                }
+            }
+        }
+    }
 }
+@Composable
+fun CarCardDetail(car: Car) {
+    val context = LocalContext.current
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp)
+            .clickable {
+                // Navigate to CarDetailsActivity when a car is clicked
+                context.startActivity(CarDetailsActivity.newIntent(context, car))
+            },
+        shape = RoundedCornerShape(8.dp),
+        border = BorderStroke(1.dp, Color.Gray) // Add a border
+    ) {
+        Row(modifier = Modifier.padding(16.dp)) {
+            // Car Image with placeholder
+            Image(
+                painter = rememberAsyncImagePainter(car.imageUrl),
+                contentDescription = car.name,
+                modifier = Modifier
+                    .size(80.dp)  // Adjust the size of the image
+                    .clip(RoundedCornerShape(8.dp)) // Round the corners of the image
+            )
+
+            Spacer(modifier = Modifier.width(16.dp)) // Space between image and text
+
+            // Column for car details
+            Column(modifier = Modifier.weight(1f)) {
+                Text(car.name, style = MaterialTheme.typography.bodyMedium) // Car name
+                Text("Category: ${car.category}", style = MaterialTheme.typography.bodySmall) // Car category
+                Text("Price: ${car.price}", style = MaterialTheme.typography.bodySmall) // Car price
+                Text("Brand: ${car.brand}", style = MaterialTheme.typography.bodySmall) // Car brand
+
+            }
+        }
+    }
+}
+
+
 
 @Composable
 fun TopBrandsLabel() {
@@ -171,10 +298,8 @@ fun CarRecommendationsLabel() {
         color = Color.Black,
         style = TextStyle(fontSize = 18.sp)
     )
-}
-
-@Composable
-fun CarRecommendationsFromSection() {
+}@Composable
+fun CarRecommendationsFromSection(onCarClick: (Car) -> Unit) {
     val cars = CarSection.getCarRecommendations()
 
     LazyColumn(
@@ -182,9 +307,7 @@ fun CarRecommendationsFromSection() {
             .padding(16.dp)
             .fillMaxWidth()
     ) {
-        item {
-            Spacer(modifier = Modifier.height(16.dp))
-        }
+        item { Spacer(modifier = Modifier.height(16.dp)) }
         items(cars.chunked(2)) { carPair ->
             Row(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -197,6 +320,7 @@ fun CarRecommendationsFromSection() {
                             .padding(8.dp)
                             .clip(RoundedCornerShape(16.dp))
                             .background(Color.White)
+                            .clickable { onCarClick(car) }
                             .padding(10.dp)
                     ) {
                         Column(
@@ -211,7 +335,6 @@ fun CarRecommendationsFromSection() {
                                     .clip(RoundedCornerShape(12.dp)),
                                 contentScale = ContentScale.Crop
                             )
-
                             Spacer(modifier = Modifier.height(8.dp))
                             Text(
                                 text = car.name,
@@ -234,6 +357,8 @@ fun CarRecommendationsFromSection() {
     }
 }
 
+
+
 @Composable
 fun CarCategoryList() {
     val categories = listOf(
@@ -247,6 +372,7 @@ fun CarCategoryList() {
             .fillMaxWidth()
     ) {
         items(categories) { category ->
+            val brands = getBrandsForCategory(category)
             CategoryItem(category)
         }
     }
@@ -264,11 +390,14 @@ fun CategoryItem(category: String) {
             .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f))
             .padding(12.dp)
             .clickable {
-                context.navigateToCategoryDetails(category) // Use the extension function
+                // Use the navigateToCategoryDetails function to navigate to the details activity
+                context.navigateToCategoryDetails(category)  // Using the extension function for navigation
             },
         style = TextStyle(fontSize = 14.sp, fontWeight = FontWeight.Medium)
     )
 }
+
+
 
 @Preview(showBackground = true)
 @Composable

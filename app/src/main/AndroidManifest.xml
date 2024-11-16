@@ -24,7 +24,7 @@
         </activity>
 
         <!-- CategoryDetails Activity -->
-        <activity android:name=".CategoryDetails"
+        <activity android:name=".CategoryDetailsActivity"
             android:exported="true">
         </activity>
 
@@ -33,7 +33,10 @@
             android:exported="true">
         </activity>
 
-        <!-- Additional activities can be declared here -->
+        <!-- CarDetailsActivity -->
+        <activity android:name=".screens.CarDetailsActivity"
+            android:exported="true">
+        </activity>
 
     </application>
 </manifest>

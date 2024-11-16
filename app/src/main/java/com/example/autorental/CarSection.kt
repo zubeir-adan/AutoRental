@@ -1,59 +1,81 @@
-// Data class for Car details
-data class Car(
-    val name: String,
-    val category: String,
-    val price: String,
-    val imageUrl: String,
-    val brand: String // Add the 'brand' field
-)
+package com.example.autorental
 
-// Object to hold car data
 object CarSection {
 
     // Function to get a list of car recommendations
     fun getCarRecommendations(): List<Car> {
         return listOf(
             Car(
+                id = 1,
                 name = "Toyota Corolla",
                 category = "Standard",
-                price = "Ksh. 4000/day",
-                imageUrl = "https://imaginative-nell-strathmore-34d67bf2.koyeb.app/mobile/category/standard/toyota-corolla.jpg?w=100&h=200",
-                brand = "Toyota" // Add a brand to each car
+                price = "KSh 4,000/day",
+                imageUrl = "https://imaginative-nell-strathmore-34d67bf2.koyeb.app/mobile/category/standard/toyota-corolla.jpg",
+                brand = "Toyota",
+                seats = 5,
+                doors = 4,
+                gasCapacity = 50.0,
+                majorDetails = "Automatic transmission, Great resale value"
             ),
             Car(
+                id = 2,
                 name = "Ford Fiesta",
                 category = "Economy",
-                price = "Ksh. 3500/day",
+                price = "KSh 3,500/day",
                 imageUrl = "https://imaginative-nell-strathmore-34d67bf2.koyeb.app/mobile/category/economy/ford-fiesta.jpg",
-                brand = "Ford" // Add a brand to each car
+                brand = "Ford",
+                seats = 5,
+                doors = 4,
+                gasCapacity = 45.0,
+                majorDetails = "Manual transmission, Compact size"
             ),
             Car(
+                id = 3,
                 name = "Mini Cooper",
                 category = "Convertible",
-                price = "Ksh. 7000/day",
-                imageUrl = "https://imaginative-nell-strathmore-34d67bf2.koyeb.app/mobile/category/convertible/mini-cooper.jpg?w=400&h=200",
-                brand = "Mini" // Add a brand to each car
+                price = "KSh 7,000/day",
+                imageUrl = "https://imaginative-nell-strathmore-34d67bf2.koyeb.app/mobile/category/convertible/mini-cooper.jpg",
+                brand = "Mini",
+                seats = 4,
+                doors = 2,
+                gasCapacity = 40.0,
+                majorDetails = "Automatic transmission, Stylish design"
             ),
             Car(
+                id = 4,
                 name = "Honda Civic",
                 category = "Standard",
-                price = "Ksh. 3100/day",
-                imageUrl = "https://imaginative-nell-strathmore-34d67bf2.koyeb.app/mobile/category/standard/honda-civic.jpg?w=400&h=200",
-                brand = "Honda" // Add a brand to each car
+                price = "KSh 3,100/day",
+                imageUrl = "https://imaginative-nell-strathmore-34d67bf2.koyeb.app/mobile/category/standard/honda-civic.jpg",
+                brand = "Honda",
+                seats = 5,
+                doors = 4,
+                gasCapacity = 50.0,
+                majorDetails = "Automatic transmission, Smooth ride"
             ),
             Car(
+                id = 5,
                 name = "Tesla Model 3",
                 category = "Electric",
-                price = "Ksh. 10,000/day",
-                imageUrl = "https://imaginative-nell-strathmore-34d67bf2.koyeb.app/mobile/category/electric/tesla-model3.jpg?w=400&h=200",
-                brand = "Tesla" // Add a brand to each car
+                price = "KSh 10,000/day",
+                imageUrl = "https://imaginative-nell-strathmore-34d67bf2.koyeb.app/mobile/category/electric/tesla-model3.jpg",
+                brand = "Tesla",
+                seats = 5,
+                doors = 4,
+                gasCapacity = 80.0,
+                majorDetails = "Electric, Advanced autopilot features"
             ),
             Car(
-                name = "Mazda CX5",
+                id = 6,
+                name = "Mazda CX-5",
                 category = "SUV",
-                price = "Ksh. 9500/day",
-                imageUrl = "https://imaginative-nell-strathmore-34d67bf2.koyeb.app/mobile/category/su/maxda-cx5.jpg?w=400&h=200",
-                brand = "Mazda" // Add a brand to each car
+                price = "KSh 9,500/day",
+                imageUrl = "https://imaginative-nell-strathmore-34d67bf2.koyeb.app/mobile/category/suv/mazda-cx5.jpg",
+                brand = "Mazda",
+                seats = 5,
+                doors = 4,
+                gasCapacity = 60.0,
+                majorDetails = "Manual transmission, Stylish"
             )
         )
     }
