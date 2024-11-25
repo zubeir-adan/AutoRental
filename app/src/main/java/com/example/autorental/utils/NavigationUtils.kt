@@ -3,7 +3,8 @@ package com.example.autorental.utils
 
 import android.content.Context
 import android.content.Intent
-import com.example.autorental.CategoryDetailsActivity
+import com.example.autorental.categories.CategoryDetailsActivity
+
 
 fun Context.navigateToCategoryDetails(category: String) {
     val intent = Intent(this, CategoryDetailsActivity::class.java).apply {

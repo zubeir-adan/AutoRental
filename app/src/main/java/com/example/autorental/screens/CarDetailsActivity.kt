@@ -6,7 +6,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import com.example.autorental.ui.theme.AutoRentalTheme
-import com.example.autorental.Car
+import com.example.autorental.data.Car
 
 class CarDetailsActivity : ComponentActivity() {
 
@@ -63,7 +63,7 @@ class CarDetailsActivity : ComponentActivity() {
          */
         fun newIntent(
             context: Context,
-            carDetails: Car
+            carDetails: Car // No userId needed here anymore
         ): Intent {
             return Intent(context, CarDetailsActivity::class.java).apply {
                 putExtra(EXTRA_NAME, carDetails.name)

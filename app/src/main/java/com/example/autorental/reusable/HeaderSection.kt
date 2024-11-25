@@ -1,6 +1,5 @@
 package com.example.autorental.reusable
 
-
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -19,10 +18,10 @@ import com.example.autorental.R
 @Composable
 fun HeaderSection() {
     Surface(
-        color = Color(0xFFD3D3D3),  // Grey background color
+        color = Color(0xFFD3D3D3),  // Cream background color
         modifier = Modifier
             .fillMaxWidth()
-            .height(100.dp),  // Adjusted height to accommodate larger image if needed
+            .height(95.dp),  // Adjusted height to accommodate larger image if needed
         shape = androidx.compose.foundation.shape.RoundedCornerShape(
             topStart = CornerSize(0.dp),
             topEnd = CornerSize(0.dp),
@@ -34,29 +33,14 @@ fun HeaderSection() {
             Modifier
                 .fillMaxSize()
                 .padding(horizontal = 16.dp, vertical = 8.dp),
-            contentAlignment = Alignment.CenterStart // Align Row to start
+            contentAlignment = Alignment.Center // Center the content (logo)
         ) {
-            Row(
-                Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween // Space out items
-            ) {
-                // Logo image on the left
-                Image(
-                    painter = painterResource(id = R.drawable.logo),
-                    contentDescription = "Logo",
-                    modifier = Modifier.size(180.dp)  // Adjust size of logo as needed
-                )
-
-                // Profile icon on the right
-                Image(
-                    painter = painterResource(id = R.drawable.profile_icon),  // Replace with actual profile icon resource
-                    contentDescription = "Profile Icon",
-                    modifier = Modifier
-                        .size(48.dp)  // Size of the profile icon
-                        .clip(CircleShape)  // Make it circular
-                )
-            }
+            // Logo image in the center
+            Image(
+                painter = painterResource(id = R.drawable.logo),
+                contentDescription = "Logo",
+                modifier = Modifier.size(140.dp)  // Adjust size of logo as needed
+            )
         }
     }
 }

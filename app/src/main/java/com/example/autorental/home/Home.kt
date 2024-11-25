@@ -1,13 +1,5 @@
-@file:Suppress("DEPRECATION")
+package com.example.autorental.home
 
-package com.example.autorental
-
-import android.content.Context
-import android.content.Intent
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -42,44 +34,32 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.view.WindowInsetsControllerCompat
 import coil.compose.rememberAsyncImagePainter
-import coil.compose.rememberImagePainter
-import com.example.autorental.CarCategoryProvider.getBrandsForCategory
-import com.example.autorental.logo.BrandCarsActivity
+import com.example.autorental.brands.BrandCarsActivity
+import com.example.autorental.data.Car
+import com.example.autorental.data.CarCategoryProvider.getBrandsForCategory
+import com.example.autorental.recommendation.CarSection
+import com.example.autorental.data.ConvertibleCars
+import com.example.autorental.data.EconomyCars
+import com.example.autorental.data.ElectricCars
+import com.example.autorental.data.LuxuryCars
+import com.example.autorental.data.PickupCars
+import com.example.autorental.R
+import com.example.autorental.data.SUVCars
+import com.example.autorental.data.StandardCars
+import com.example.autorental.data.VanCars
 import com.example.autorental.reusable.HeaderSection
 import com.example.autorental.screens.CarDetailsActivity
 import com.example.autorental.screens.CarDetailsScreen
 import com.example.autorental.ui.theme.AutoRentalTheme
 import com.example.autorental.utils.navigateToCategoryDetails // Keep this as it's still in use
 
-
-class HomeActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-
-        val controller = WindowInsetsControllerCompat(window, window.decorView)
-        controller.isAppearanceLightStatusBars = false
-        window.statusBarColor = android.graphics.Color.parseColor("#D3D3D3")
-
-        setContent {
-            AutoRentalTheme {
-                HomeScreen()
-            }
-        }
-    }
-}
-
 @Composable
 fun HomeScreen() {
-    // State to hold the selected car
-
     var selectedCar: Car? by remember { mutableStateOf(null) }
 
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
         if (selectedCar == null) {
-            // Show the main home screen when no car is selected
             Column(modifier = Modifier.padding(innerPadding)) {
                 HeaderSection()
                 SearchBar()
@@ -99,7 +79,6 @@ fun HomeScreen() {
                 })
             }
         } else {
-            // Show the car details screen when a car is selected
             CarDetailsScreen(
                 name = selectedCar!!.name,
                 category = selectedCar!!.category,
@@ -115,22 +94,26 @@ fun HomeScreen() {
         }
     }
 }
+
 @Composable
 fun CarLogosRow() {
     val logos = listOf(
-        "nissan" to "https://imaginative-nell-strathmore-34d67bf2.koyeb.app/mobile/logo/nissan.jpg",
-        "bmw" to "https://imaginative-nell-strathmore-34d67bf2.koyeb.app/mobile/logo/bmw.jpg",
-        "toyota" to "https://imaginative-nell-strathmore-34d67bf2.koyeb.app/mobile/logo/toyota.jpg",
-        "audi" to "https://imaginative-nell-strathmore-34d67bf2.koyeb.app/mobile/logo/audi.jpg",
-        "ford" to "https://imaginative-nell-strathmore-34d67bf2.koyeb.app/mobile/logo/ford.jpg",
-        "chevy" to "https://imaginative-nell-strathmore-34d67bf2.koyeb.app/mobile/logo/chevy.jpg",
-        "benz" to "https://imaginative-nell-strathmore-34d67bf2.koyeb.app/mobile/logo/benz.jpg",
-        "honda" to "https://imaginative-nell-strathmore-34d67bf2.koyeb.app/mobile/logo/honda.jpg",
-        "hyundai" to "https://imaginative-nell-strathmore-34d67bf2.koyeb.app/mobile/logo/hyundai.png",
-        "jeep" to "https://imaginative-nell-strathmore-34d67bf2.koyeb.app/mobile/logo/jeep.jpg",
-        "tesla" to "https://imaginative-nell-strathmore-34d67bf2.koyeb.app/mobile/logo/tesla.jpg",
-        "volkswagen" to "https://imaginative-nell-strathmore-34d67bf2.koyeb.app/mobile/logo/volkswagen.jpg"
+        "nissan" to "https://imaginative-nell-strathmore-34d67bf2.koyeb.app/logo/nissan.png",
+        "bmw" to "https://imaginative-nell-strathmore-34d67bf2.koyeb.app/logo/bmw.png",
+        "toyota" to "https://imaginative-nell-strathmore-34d67bf2.koyeb.app/logo/toyota.png",
+        "audi" to "https://imaginative-nell-strathmore-34d67bf2.koyeb.app/logo/audi.png",
+        "ford" to "https://imaginative-nell-strathmore-34d67bf2.koyeb.app/logo/ford.png",
+        "chevrolet" to "https://imaginative-nell-strathmore-34d67bf2.koyeb.app/logo/chevy.png",  // Corrected "chevy" to "chevrolet"
+        "honda" to "https://imaginative-nell-strathmore-34d67bf2.koyeb.app/logo/honda.png",
+        "hyundai" to "https://imaginative-nell-strathmore-34d67bf2.koyeb.app/logo/hyundai.png",
+        "jeep" to "https://imaginative-nell-strathmore-34d67bf2.koyeb.app/logo/jeep.png",
+        "tesla" to "https://imaginative-nell-strathmore-34d67bf2.koyeb.app/logo/tesla.png",
+        "volkswagen" to "https://imaginative-nell-strathmore-34d67bf2.koyeb.app/logo/volkswagen.png",
+        "mercedes-benz" to "https://imaginative-nell-strathmore-34d67bf2.koyeb.app/logo/benz.png", // Added for Mercedes-Benz
+        "mazda" to "https://imaginative-nell-strathmore-34d67bf2.koyeb.app/logo/mazda.png",  // Added for Mazda
+        "porsche" to "https://imaginative-nell-strathmore-34d67bf2.koyeb.app/logo/porsche.png"  // Added for Porsche
     )
+
 
     Row(
         modifier = Modifier
@@ -284,7 +267,7 @@ fun CarCardDetail(car: Car) {
 fun TopBrandsLabel() {
     Text(
         text = "Top brands",
-        modifier = Modifier.padding(start = 16.dp, top = 8.dp),
+        modifier = Modifier.padding(start = 16.dp, top = 1.dp),
         color = Color.Black,
         style = TextStyle(fontSize = 18.sp)
     )
@@ -294,63 +277,56 @@ fun TopBrandsLabel() {
 fun CarRecommendationsLabel() {
     Text(
         text = "Car recommendations",
-        modifier = Modifier.padding(start = 16.dp, top = 6.dp),
+        modifier = Modifier.padding(start = 16.dp, top = 1.dp),
         color = Color.Black,
         style = TextStyle(fontSize = 18.sp)
     )
-}@Composable
+}
+
+@Composable
 fun CarRecommendationsFromSection(onCarClick: (Car) -> Unit) {
     val cars = CarSection.getCarRecommendations()
 
-    LazyColumn(
+    LazyRow(
         modifier = Modifier
-            .padding(16.dp)
-            .fillMaxWidth()
+            .padding(vertical = 16.dp)  // Only top and bottom padding
+            .fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)  // Small spacing between items
     ) {
-        item { Spacer(modifier = Modifier.height(16.dp)) }
-        items(cars.chunked(2)) { carPair ->
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.fillMaxWidth()
+        items(cars) { car ->
+            Box(
+                modifier = Modifier
+                    .width(200.dp)  // Fixed width similar to the vertical version
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(Color.White)
+                    .clickable { onCarClick(car) }
+                    .padding(10.dp),
+                contentAlignment = Alignment.Center // Center content in the Box
             ) {
-                carPair.forEach { car ->
-                    Box(
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.align(Alignment.Center) // Center the column within the Box
+                ) {
+                    Image(
+                        painter = rememberAsyncImagePainter(car.imageUrl),
+                        contentDescription = "Car Image",
                         modifier = Modifier
-                            .weight(1f)
-                            .padding(8.dp)
-                            .clip(RoundedCornerShape(16.dp))
-                            .background(Color.White)
-                            .clickable { onCarClick(car) }
-                            .padding(10.dp)
-                    ) {
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Image(
-                                painter = rememberAsyncImagePainter(car.imageUrl),
-                                contentDescription = "Car Image",
-                                modifier = Modifier
-                                    .fillMaxWidth(0.7f)
-                                    .aspectRatio(1f)
-                                    .clip(RoundedCornerShape(12.dp)),
-                                contentScale = ContentScale.Crop
-                            )
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Text(
-                                text = car.name,
-                                style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Bold),
-                                modifier = Modifier.padding(bottom = 4.dp)
-                            )
-                            Text(
-                                text = car.category,
-                                style = TextStyle(fontSize = 14.sp, fontWeight = FontWeight.Medium)
-                            )
-                            Text(
-                                text = car.price,
-                                style = TextStyle(fontSize = 14.sp, fontWeight = FontWeight.Medium)
-                            )
-                        }
-                    }
+                            .width(110.dp) // Set the width as needed
+                            .height(100.dp) // Set the desired height for a custom aspect ratio
+                            .clip(RoundedCornerShape(12.dp)),
+                        contentScale = ContentScale.Fit
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = car.name,
+                        style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Bold),  // Original font size
+                        modifier = Modifier.padding(bottom = 4.dp)
+                    )
+                    Text(
+                        text = car.price,
+                        style = TextStyle(fontSize = 14.sp, fontWeight = FontWeight.Medium)
+                    )
                 }
             }
         }
@@ -404,5 +380,5 @@ fun CategoryItem(category: String) {
 fun PreviewHomeScreen() {
     AutoRentalTheme {
         HomeScreen()
-    }
+        }
 }

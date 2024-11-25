@@ -1,3 +1,13 @@
 <resources>
     <string name="app_name">autoRental</string>
+    <string name="email">email\n</string>
+    <string name="password">password</string>
+    <string name="login">login</string>
+    <string name="app_logo">app_logo</string>
+    <string name="first_name">first_name\n</string>
+    <string name="last_name">last_name\n</string>
+    <string name="date_of_birth_dd_mm_yyyy">date_of_birth_dd_mm_yyyy</string>
+    <string name="confirm_password">confirm_password\n</string>
+    <string name="sign_up">sign_up\n</string>
+    <string name="save">save</string>
 </resources>
